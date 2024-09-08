@@ -120,3 +120,12 @@ tr:nth-child(even) {
 .dark > a {
   color: white;
 }
+
+.light-nav {
+  background-color: white;
+  color: black;
+}
+.dark-nav {
+  background-color: black;
+  color: white;
+}
