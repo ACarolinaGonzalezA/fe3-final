@@ -1,34 +1,38 @@
-import { useEffect, createContext, useMemo, useState } from "react";
+import axios from "axios";
+import { useEffect, createContext, useState, useContext  } from "react";
 
 export const initialState = {theme: "light", data: []}
 
-export const ContextGlobal = createContext(undefined);
+export const ContextGlobal = createContext();
+
+const lsFavs = JSON.parse(localStorage.getItem("favs")) || [];
 
 export const ContextProvider = ({ children }) => {
-
-  //Aqui deberan implementar la logica propia del Context, utilizando el hook useMemo
-
+  //Aqui deberan implementar la logica propia del Context
   const [theme, setTheme] = useState("light");
+  const [favs, setFavs] = useState(lsFavs);
   const [dentists, setDentists] = useState([]);
+  const url = "https://jsonplaceholder.typicode.com/users";
+
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then(response => response.json())
-      .then(data => setDentists(data))
-      .catch(error => console.error("Error fetching data:", error));
+    axios(url).then((res) => {
+      console.log(res.data);
+      setDentists(res.data);
+    });
   }, []);
 
-
-  const value = useMemo(() => ({
-    theme,
-    setTheme,
-    dentists
-  }), [theme, dentists]);
-
-
+  useEffect(() => {
+    localStorage.setItem("favs", JSON.stringify(favs));
+  }, [favs]);
+  
   return (
-    <ContextGlobal.Provider value={value}>
+    <ContextGlobal.Provider value={{theme, setTheme, favs, setFavs, dentists}}>
       {children}
     </ContextGlobal.Provider>
   );
+};
+
+export const useContextGlobal = () => {
+  return useContext(ContextGlobal);
 };
